@@ -84,7 +84,6 @@ exports.remove = (req, res) => {
   });
 };
 
-
 exports.update = (req, res) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -110,7 +109,7 @@ exports.update = (req, res) => {
       });
     }
     let product = req.product;
-    product = _.extend(product, fields)
+    product = _.extend(product, fields);
 
     if (files.photo) {
       // 1kb = 1000
@@ -133,4 +132,29 @@ exports.update = (req, res) => {
       res.json(result);
     });
   });
+};
+
+//  sell & arrival
+//  by sell = /products?sortBy=sold&order=desc&limit=4
+//  by arrival = /products?sortBy=createdAt&order=desc&limit=4
+//  if no params are sent, then all products are returned
+
+exports.list = (req, res) => {
+  let order = req.query.order ? req.query.order : "asc";
+  let sortBy = req.query.sortBy ? req.query.order : "_id";
+  let limit = req.query.limit ? req.query.order : 6;
+
+  Product.find()
+    .select("-photo")
+    .populate("category")
+    .sort([[sortBy, order]])
+    .limit(limit)
+    .exec((err, products) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Products not found.",
+        });
+      }
+      res.send(products);
+    });
 };
