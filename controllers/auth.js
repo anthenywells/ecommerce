@@ -19,7 +19,6 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
-  console.log("exports.signup -> req", req.body);
   // find the user based on email
   const { email, password } = req.body;
   User.findOne({ email }, (err, user) => {
@@ -55,7 +54,7 @@ exports.requireSignin = expressJwt({
 });
 
 exports.isAuth = (req, res, next) => {
-  let user = req.profile && req.auth && req.profile._id == req.auth._id;
+  let user = req.profile && req.auth && String(req.profile._id) == req.auth.id;
 
   if (!user) {
     return res.status(403).json({
