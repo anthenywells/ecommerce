@@ -200,35 +200,43 @@ exports.listBySearch = (req, res) => {
   // console.log("findArgs", findArgs);
 
   for (let key in req.body.filters) {
-      if (req.body.filters[key].length > 0) {
-          if (key === "price") {
-              // gte -  greater than price [0-10]
-              // lte - less than
-              findArgs[key] = {
-                  $gte: req.body.filters[key][0],
-                  $lte: req.body.filters[key][1]
-              };
-          } else {
-              findArgs[key] = req.body.filters[key];
-          }
+    if (req.body.filters[key].length > 0) {
+      if (key === "price") {
+        // gte -  greater than price [0-10]
+        // lte - less than
+        findArgs[key] = {
+          $gte: req.body.filters[key][0],
+          $lte: req.body.filters[key][1],
+        };
+      } else {
+        findArgs[key] = req.body.filters[key];
       }
+    }
   }
 
   Product.find(findArgs)
-      .select("-photo")
-      .populate("category")
-      .sort([[sortBy, order]])
-      .skip(skip)
-      .limit(limit)
-      .exec((err, data) => {
-          if (err) {
-              return res.status(400).json({
-                  error: "Products not found"
-              });
-          }
-          res.json({
-              size: data.length,
-              data
-          });
+    .select("-photo")
+    .populate("category")
+    .sort([[sortBy, order]])
+    .skip(skip)
+    .limit(limit)
+    .exec((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Products not found",
+        });
+      }
+      res.json({
+        size: data.length,
+        data,
       });
+    });
+};
+
+exports.photo = (req, res, next) => {
+  if (req.product.photo.data) {
+    res.set("Content-Type", req.product.photo.contentType);
+    return res.send(req.product.photo.data);
+  }
+  next();
 };
