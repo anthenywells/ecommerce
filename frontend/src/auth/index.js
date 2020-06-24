@@ -16,6 +16,7 @@ export const signup = (user) => {
       console.log("signup -> err", err);
     });
 };
+
 export const signin = (user) => {
   return fetch(`${API}/signin`, {
     method: "POST",
@@ -31,4 +32,11 @@ export const signin = (user) => {
     .catch((err) => {
       console.log("signin -> err", err);
     });
+};
+
+export const authenticate = (data, next) => {
+  if (typeof window !== undefined) {
+    localStorage.setItem("jwt", JSON.stringify(data));
+    next();
+  }
 };
