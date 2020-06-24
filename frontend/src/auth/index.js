@@ -40,3 +40,30 @@ export const authenticate = (data, next) => {
     next();
   }
 };
+
+export const signout = (next) => {
+  if (typeof window !== undefined) {
+    localStorage.removeItem("jwt");
+    next();
+    return fetch(`${API}/signout`, {
+      method: "GET",
+    })
+      .then((response) => {
+        console.log("signout -> response", response);
+      })
+      .catch((error) => {
+        console.log("signout -> error", error);
+      });
+  }
+};
+
+export const isAuthenticated = () => {
+  if (typeof window == undefined) {
+    return false;
+  }
+  if (localStorage.getItem("jwt")) {
+    return JSON.parse(localStorage.getItem("jwt"));
+  } else {
+    return false;
+  }
+};
