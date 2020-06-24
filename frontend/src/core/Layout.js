@@ -9,7 +9,7 @@ const Layout = ({
 }) => (
   <div>
   <Menu/>
-    <div className="p-5 bg-light">
+    <div className="p-5 bg-light mb-3">
       <h2>{title}</h2>
       <p className="lead">{description}</p>
     </div>
