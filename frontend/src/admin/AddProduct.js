@@ -188,8 +188,8 @@ const AddProduct = () => {
     <Layout title="Add a new product" description={`Hello, ${user.name}`}>
       <div className="row">
         <div className="col-md-8 offset-md-2">
-          {showLoading()}
           {showError()}
+          {showLoading()}
           {showSuccess()}
           {newPostForm()}
         </div>
