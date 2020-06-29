@@ -67,7 +67,9 @@ const Search = () => {
 
         <div className="row">
           {results.map((product, i) => (
-            <Card key={i} product={product} />
+            <div className="col-4 mb-3">
+              <Card key={i} product={product} />
+            </div>
           ))}
         </div>
       </div>
@@ -79,7 +81,10 @@ const Search = () => {
       <span className="input-group-text">
         <div className="input-group input-group-lg">
           <div className="input-group-prepend">
-            <select className="btn mr-2" onChange={handleChange("category")}>
+            <select
+              className="btn m-2 mr-3"
+              onChange={handleChange("category")}
+            >
               <option value="All">All</option>
               {categories.map((c, i) => (
                 <option key={i} value={c._id}>
