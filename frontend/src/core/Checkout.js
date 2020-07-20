@@ -11,7 +11,7 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
 
   const showCheckout = () => {
     return isAuthenticated() ? (
-        <button className="btn btn-primary">Checkout</button>
+        <button className="btn btn-success">Checkout</button>
     ) : (
       <Link to="/signin">
         <button className="btn btn-primary">Sign in to checkout</button>
