@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import DropIn from "braintree-web-drop-in-react";
 import { Link } from "react-router-dom";
 import { getBraintreeClientToken, processPayment } from "./apiCore";
+import { emptyCart } from "./cartHelpers";
 import { isAuthenticated } from "../auth";
 
 const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
   const [data, setData] = useState({
+    loading: false,
     success: false,
     clientToken: null,
     error: "",
@@ -47,6 +49,7 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
   };
 
   const buy = () => {
+    setData({ loading: true });
     //send nonce to server
     //nonce = data.instance.requestPaymentMethod()
     let nonce;
@@ -57,7 +60,7 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
         nonce = data.nonce;
         //once you have nonce, send (card type, card number) send nonce as 'paymentMethodNonce' and total to be charged
         // console.log(
-        //   "send nonce and total to be process:",
+        //   "send nonce and total to process:",
         //   nonce,
         //   getTotal(products)
         // );
@@ -71,11 +74,15 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
             // console.log("buy -> response", response);
             setData({ ...data, success: response.success });
             //empty cart
+            emptyCart(() => {
+              setData({ loading: false });
+            })
             //create order
 
           })
           .catch((error) => {
             console.log("buy -> error", error);
+            setData({ loading: false });
           });
       })
       .catch((error) => {
@@ -91,6 +98,9 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
           <DropIn
             options={{
               authorization: data.clientToken,
+              paypal: {
+                flow: 'vault'
+              }
             }}
             onInstance={(instance) => (data.instance = instance)}
           />
@@ -120,11 +130,16 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
     </div>
   );
 
+  const showLoading = (loading) => (
+    loading && <h2>Loading...</h2>
+  )
+
   return (
     <div>
       <h2>Total: ${getTotal()}</h2>
       {showError(data.error)}
       {showSuccess(data.success)}
+      {showLoading(data.loading)}
       {showCheckout()}
     </div>
   );
