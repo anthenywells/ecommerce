@@ -80,16 +80,22 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
             //create order
             const orderData = {
               products: products,
-              transaction_id: response.transaction_id,
+              transaction_id: response.transaction.id,
               amount: response.transaction.amount,
-              address: data.address
-            }
+              address: data.address,
+            };
             createOrder(userId, token, orderData)
+              .then(() => {
+                //empty cart
+                emptyCart(() => {
+                  setData({ loading: false, success: true });
+                });
+              })
+              .catch((error) => {
+              console.log("buy -> error", error)
+                setData({ loading: false});
+              });
             setData({ ...data, success: response.success });
-            //empty cart
-            emptyCart(() => {
-              setData({ loading: false });
-            });
           })
           .catch((error) => {
             console.log("buy -> error", error);
@@ -104,23 +110,22 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
 
   const handleAddress = (event) => {
     setData({ ...data, address: event.target.value });
-  }
+  };
 
   const showDropIn = () => (
     <div onBlur={() => setData({ ...data, error: "" })}>
       {data.clientToken !== null && products.length > 0 ? (
         <div>
-        <div className="gorm-group mb-3">
+          <div className="gorm-group mb-3">
             <label className="text-muted">Delivery address:</label>
             <textarea
-                onChange={handleAddress}
-                className="form-control"
-                value={data.address}
-                placeholder="Type your delivery address here..."
+              onChange={handleAddress}
+              className="form-control"
+              value={data.address}
+              placeholder="Type your delivery address here..."
             />
-        </div>
+          </div>
           <DropIn
-
             options={{
               authorization: data.clientToken,
               paypal: {
