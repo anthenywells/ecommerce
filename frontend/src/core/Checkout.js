@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import DropIn from "braintree-web-drop-in-react";
 import { Link } from "react-router-dom";
-import { getBraintreeClientToken, processPayment } from "./apiCore";
+import {
+  getBraintreeClientToken,
+  processPayment,
+  createOrder,
+} from "./apiCore";
 import { emptyCart } from "./cartHelpers";
 import { isAuthenticated } from "../auth";
 
@@ -72,13 +76,20 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
         processPayment(userId, token, paymentData)
           .then((response) => {
             // console.log("buy -> response", response);
+
+            //create order
+            const orderData = {
+              products: products,
+              transaction_id: response.transaction_id,
+              amount: response.transaction.amount,
+              address: data.address
+            }
+            createOrder(userId, token, orderData)
             setData({ ...data, success: response.success });
             //empty cart
             emptyCart(() => {
               setData({ loading: false });
-            })
-            //create order
-
+            });
           })
           .catch((error) => {
             console.log("buy -> error", error);
@@ -91,16 +102,30 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
       });
   };
 
+  const handleAddress = (event) => {
+    setData({ ...data, address: event.target.value });
+  }
+
   const showDropIn = () => (
     <div onBlur={() => setData({ ...data, error: "" })}>
       {data.clientToken !== null && products.length > 0 ? (
         <div>
+        <div className="gorm-group mb-3">
+            <label className="text-muted">Delivery address:</label>
+            <textarea
+                onChange={handleAddress}
+                className="form-control"
+                value={data.address}
+                placeholder="Type your delivery address here..."
+            />
+        </div>
           <DropIn
+
             options={{
               authorization: data.clientToken,
               paypal: {
-                flow: 'vault'
-              }
+                flow: "vault",
+              },
             }}
             onInstance={(instance) => (data.instance = instance)}
           />
@@ -130,9 +155,7 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
     </div>
   );
 
-  const showLoading = (loading) => (
-    loading && <h2>Loading...</h2>
-  )
+  const showLoading = (loading) => loading && <h2>Loading...</h2>;
 
   return (
     <div>
