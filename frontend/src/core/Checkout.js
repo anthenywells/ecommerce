@@ -52,6 +52,8 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
     );
   };
 
+  const deliveryAddress = data.address;
+
   const buy = () => {
     setData({ loading: true });
     //send nonce to server
@@ -80,9 +82,9 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
             //create order
             const orderData = {
               products: products,
+              address: deliveryAddress,
               transaction_id: response.transaction.id,
               amount: response.transaction.amount,
-              address: data.address,
             };
             createOrder(userId, token, orderData)
               .then(() => {
