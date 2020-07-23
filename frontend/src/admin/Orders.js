@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Layout from "../core/Layout";
-import { listOrders } from "./apiAdmin";
+import { listOrders, getStatusValues } from "./apiAdmin";
 import { isAuthenticated } from "../auth";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [statusValues, setStatusValues] = useState([]);
   const { user, token } = isAuthenticated();
 
   const loadOrders = () => {
@@ -19,8 +20,19 @@ const Orders = () => {
     });
   };
 
+  const loadStatusValues = () => {
+    getStatusValues(user._id, token).then((data) => {
+      if (data.error) {
+        console.log("loadOrders -> data.error", data.error);
+      } else {
+        setStatusValues(data);
+      }
+    });
+  };
+
   useEffect(() => {
     loadOrders();
+    loadStatusValues();
   }, []);
 
   const showOrderslength = () => {
@@ -42,6 +54,27 @@ const Orders = () => {
     </div>
   );
 
+  const handleStatusChange = (e, orderId) => {
+    console.log("handleStatusChange -> orderId", orderId);
+  };
+
+  const showStatus = (o) => (
+    <div className="form-group">
+      <h3 className="mark mb-4">Status: {o.status}</h3>
+      <select
+        className="form-control"
+        onChange={(e) => handleStatusChange(e, o._id)}
+      >
+        <option>Update Status</option>
+        {statusValues.map((status, index) => (
+          <option key={index} value={status}>
+            {status}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
   return (
     <Layout
       title="Add a new category"
@@ -53,15 +86,13 @@ const Orders = () => {
           {orders.map((o, oIndex) => {
             return (
               <div
-                className="mt-5"
+                className="mb-5"
                 key={oIndex}
                 style={{ borderBottom: "5px solid indigo" }}
               >
-                <h2 className="mb-3">
-                  <span className="bg-primary">{o._id}</span>
-                </h2>
+                <h3 className="mt-3 font-italic">Order Id: {o._id}</h3>
                 <ul className="list-group">
-                  <li className="list-group-item">{o.status}</li>
+                  <li className="list-group-item">{showStatus(o)}</li>
                   <li className="list-group-item">
                     Transaction Id: {o.transaction_id}
                   </li>
@@ -74,9 +105,9 @@ const Orders = () => {
                     Delivery Address: {o.address}
                   </li>
                 </ul>
-                <h3 className="mt-3 font-italic">
+                <h4 className="mt-3 font-italic">
                   Total Products: {o.products.length}
-                </h3>
+                </h4>
 
                 {o.products.map((p, pIndex) => (
                   <div
