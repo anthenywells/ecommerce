@@ -29,7 +29,7 @@ router.get(
   isAdmin,
   getStatusValues
 );
-router.get(
+router.put(
   "/order/:orderId/status/:userId",
   requireSignin,
   isAuth,

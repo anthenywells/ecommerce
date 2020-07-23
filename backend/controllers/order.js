@@ -5,7 +5,7 @@ exports.orderById = (req, res, next, id) => {
   Order.findById(id)
     .populate("products.product", "name price")
     .sort("-created")
-    .exec((err, orders) => {
+    .exec((err, order) => {
       if (err) {
         return res.status(400).json({
           error: errorHandler(err),
