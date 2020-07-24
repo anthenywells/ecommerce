@@ -1,8 +1,9 @@
 const User = require("../models/user");
+const { errorHandler } = require("../helpers/dbErrorHandler");
 
 exports.userById = (req, res, next, id) => {
-  User.findById(id).exec((err, user) => {
-    if (err || !user)
+  User.findById(id).exec((error, user) => {
+    if (error || !user)
       return res.status(400).json({
         error: "User not found",
       });
@@ -23,8 +24,8 @@ exports.update = (req, res) => {
     { _id: req.profile._id },
     { $set: req.body },
     { new: true },
-    (err, user) => {
-      if (err) {
+    (error, user) => {
+      if (error) {
         return res.status(400).json({
           error: "You are not authorized to perform this action.",
         });
@@ -62,4 +63,18 @@ exports.addOrderToUserHistory = (req, res, next) => {
       next();
     }
   );
+};
+
+exports.purchaseHistory = (req, res) => {
+  Order.find({ user: req.profile._id })
+    .populate("user", "_id name")
+    .sort("-created")
+    .exec((error, orders) => {
+      if (error) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+      res.json(orders)
+    });
 };
