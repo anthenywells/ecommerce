@@ -52,9 +52,9 @@ const addToCart = () => {
 
   const showStock = quantity => {
     return quantity > 0 ? (
-      <span className="badge badge-primary badge-pill">In Stock </span>
+      <span className="badge bg-primary rounded-pill">In Stock </span>
     ) : (
-      <span className="badge badge-primary badge-pill">Out of Stock </span>
+      <span className="badge bg-primary rounded-pill">Out of Stock </span>
     );
   };
 
