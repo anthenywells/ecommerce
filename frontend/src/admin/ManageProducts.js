@@ -37,6 +37,8 @@ const ManageProducts = () => {
       <h2 className="mb-4">Manage Products</h2>
       <div className="row">
         <div className="col-12">
+          <h2 className="text-center">Total {products.length} products</h2>
+          <hr />
           <ul className="list-group">
             {products.map((p, i) => (
               <li
@@ -44,7 +46,7 @@ const ManageProducts = () => {
                 className="list-group-item d-flex justify-content-between align-items-center"
               >
                 <strong>{p.name}</strong>
-                <Link path={`/admin/product/update/${p._id}`}>
+                <Link to={`/admin/product/update/${p._id}`}>
                   <span className="badge bg-warning rounded-pill">Update</span>
                 </Link>
                 <span
