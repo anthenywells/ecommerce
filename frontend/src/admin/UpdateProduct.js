@@ -48,7 +48,7 @@ const UpdateProduct = ({ match }) => {
           name: data.name,
           description: data.description,
           price: data.price,
-          category: data.category._id,
+          category: data.category ? data.category._id : "",
           quantity: data.quantity,
           shipping: data.shipping,
           form: new FormData(),
